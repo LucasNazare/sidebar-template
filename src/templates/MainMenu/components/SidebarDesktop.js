@@ -3,7 +3,7 @@ import React, { useContext } from 'react'
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { DesignContext } from '../../../contexts/DesignContext';
-import logo from '../../../assets/imgs/KW_VALE.png'
+import logo from '../../../assets/imgs/victory.png'
 import GroupIcon from '@mui/icons-material/Group';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ReceiptIcon from '@mui/icons-material/Receipt';
@@ -71,12 +71,6 @@ export default function SidebarDesktop({ mobile }) {
                         </ListItemButton>
 
 
-                        <ListItemButton onClick={() => navigate('/agentes')}>
-                            <ListItemIcon>
-                                <GroupIcon />
-                            </ListItemIcon>
-                            <span style={{ fontSize: '1.2rem' }}>Agentes</span>
-                        </ListItemButton>
 
 
                         <ListItemButton onClick={() => navigate('/receita')}>

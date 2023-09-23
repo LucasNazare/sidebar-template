@@ -52,7 +52,7 @@ p {
 
 a {
   font-family: roboto, sans-serif;
-  color: #0099a7;
+  color: #0011a7;
   text-decoration: none;
 }
 
@@ -65,7 +65,7 @@ label {
 
 /* Basic button styling */
 .button {
-  background-image: linear-gradient(45deg, #0099a7, #00c8df);
+  background-image: linear-gradient(45deg, #b500ec, #0011a7);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2);
   border: none;
   border-radius: 25px;
@@ -84,13 +84,13 @@ label {
 
 /* Add a material shadow on hover */
 .button:hover {
-  background-image: linear-gradient(45deg, #00b3c4, #00e5ff);
+  background-image: linear-gradient(45deg, #cc26ff, #0018f5);
   text-transform: uppercase;
 }
 
 /* Active state (when button is clicked) */
 .button:active {
-  background-image: linear-gradient(45deg, #00c8df, #00e5ff);
+  background-image: linear-gradient(45deg, #8600af, #000f94);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
@@ -98,10 +98,10 @@ label {
 .button-outlined {
   background-color: transparent;
   text-transform: uppercase;
-  border: 1px solid #0099a7;
+  border: 1px solid #0011a7;
   /* Same color as the lighter color in the gradient */
   border-radius: 25px;
-  color: #0099a7;
+  color: #0011a7;
   cursor: pointer;
   display: inline-block;
   font-size: .8rem;
@@ -152,4 +152,15 @@ label {
 .dark {
   border-color: #140734;
   color: #140734
+}
+
+/* Add this to your CSS file or style component */
+.TableContainer {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.Table {
+  min-width: 650px;
+  /* Adjust as needed */
 }

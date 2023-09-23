@@ -1,7 +1,7 @@
 import { Grid, Hidden, Paper, TextField, Typography } from '@mui/material'
 import React, { useContext, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthContext'
-import logo from '../../assets/imgs/KW_VALE.png'
+import logo from '../../assets/imgs/victory.png'
 
 export default function Login() {
     const { setToken, setUser, token, user } = useContext(AuthContext);
@@ -48,7 +48,7 @@ export default function Login() {
                                 <Paper elevation={3} style={{ padding: '20px 20px 30px 20px', margin: '0px 20px 0px 20px', maxWidth: '360px' }}>
                                     <Grid container spacing={3} alignContent={'center'} alignItems={'center'}>
                                         <Grid item xs={12}>
-                                            <h2>Digite seu Email e Senha</h2>
+                                            <h3>Seja bem vindo!</h3>
                                         </Grid>
                                         <Grid item xs={12}>
                                             <TextField label="Email" type='email' variant='outlined' color='primary' name='email' onChange={changeValue} value={email} fullWidth />

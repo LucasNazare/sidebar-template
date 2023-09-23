@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material'
 import React from 'react'
 import NumberCard from '../../components/Cards/NumberCard'
-import InfiniteTable from '../../components/Tables/InfiniteTable'
+import DynamicDataGrid from '../../components/Tables/DynamicDataGrid'
 
 export default function Agents() {
     return (
@@ -23,7 +23,6 @@ export default function Agents() {
             </Grid>
 
             <Grid item xs={12}>
-                <InfiniteTable />
             </Grid>
         </Grid>
     )

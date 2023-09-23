@@ -41,6 +41,13 @@ export default function MyAccount() {
                                         fullWidth
                                     />
                                 </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <label>CPF</label>
+                                    <TextField
+                                        placeholder='CPFhn'
+                                        fullWidth
+                                    />
+                                </Grid>
                                 <Grid item xs={12} sm={12} style={{ marginTop: ' 10px', }}>
                                     <button className='button'>Alterar Senha</button>
                                 </Grid>
@@ -59,15 +66,13 @@ export default function MyAccount() {
                         <Grid item xs={12}>
                             <Grid container spacing={1}>
                                 <Grid item xs={12} sm={4}>
-                                    <label>Cargo</label>
+                                    <label>Função</label>
                                     <Select
                                         fullWidth
                                     >
-                                        <MenuItem value={"OP"}>Operating Principal</MenuItem>
-                                        <MenuItem value={"TL"}>Team Leader</MenuItem>
-                                        <MenuItem value={"MCA"}>Market Center Administrator</MenuItem>
-                                        <MenuItem value={"PC"}>Productivity Coach</MenuItem>
-                                        <MenuItem value={"DOFI"}>Director of First Impressions</MenuItem>
+                                        <MenuItem value={"ADM"}>Administrador</MenuItem>
+                                        <MenuItem value={"Operator"}>Operador</MenuItem>
+                                        <MenuItem value={"Client"}>Cliente</MenuItem>
                                     </Select>
                                 </Grid>
                                 <Grid item xs={12} sm={4}>
