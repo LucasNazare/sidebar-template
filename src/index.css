@@ -20,12 +20,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f2f3f7 !important;
+  background-image: linear-gradient(145deg, rgb(197, 197, 197, .05), rgba(97, 97, 97, 0.15)) !important;
 }
 
 h1 {
   font-family: roboto, sans-serif;
   font-size: 2.1rem;
-  color: rgb(20, 7, 52);
+  color: rgb(51, 51, 51);
   font-weight: 700;
   line-height: 1.2;
   margin: 0;
@@ -115,18 +116,19 @@ label {
 
 /* Add a material shadow and background color on hover */
 .button-outlined:hover {
-  background-color: rgba(76, 255, 255, 0.1);
+  background-color: rgba(38, 0, 177, 0.219);
   /* Lighter color with reduced opacity */
-  color: #00c8df;
+  color: #0011a7;
   /* Hover gradient color */
 }
 
 /* Active state (when button is clicked) */
 .button-outlined:active {
-  background-color: rgba(76, 219, 255, 0.2);
+  background-color: rgba(37, 0, 247, 0.4);
   /* Lighter color with slightly increased opacity */
-  color: #00c8df;
+  color: #0015d3;
   /* Active gradient color */
+  border-color: #0011a7;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
@@ -163,4 +165,9 @@ label {
 .Table {
   min-width: 650px;
   /* Adjust as needed */
+}
+
+.mini {
+  font-size: .7rem;
+  padding: 12px;
 }

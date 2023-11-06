@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Divider, Grid, MenuItem, Paper, Select, TextField } from '@mui/material';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-export default function MyAccount() {
-    // States for personal 
-    const [id, setId] = useState('');
+export default function NewUser() {
+    const navigate = useNavigate();
+    // States for personal details
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [countryCode, setCountryCode] = useState('');
     const [phone, setPhone] = useState('');
     const [cpf, setCpf] = useState('');
+    const [firstPassword, setFirstPassword] = useState('');
 
     // States for bank details
     const [bank, setBank] = useState('');
@@ -20,7 +22,6 @@ export default function MyAccount() {
 
     // States for professional details
     const [role, setRole] = useState('');
-    const [newPassword, setNewPassword] = useState('');
 
     // States for address
     const [cep, setCep] = useState('');
@@ -32,64 +33,23 @@ export default function MyAccount() {
     const [state, setState] = useState('');
     const [country, setCountry] = useState('');
 
-    // Loading state
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                console.log(axios.defaults.headers.common['Authorization'])
-                let res = await axios.get('/auth/me');
-                console.log(res.data)
-                const user = res.data?.user;
-                setId(user._id || '');
-                setFullName(user.name || '');
-                setEmail(user.email || '');
-                setCountryCode(user.phoneCountryCode || '');
-                setPhone(user.phone || '');
-                setCpf(user.cpfCnpj || '');
-
-                setBank(user.bank || '');
-                setPix(user.pix || '');
-                setAgency(user.ag || '');
-                setAccount(user.cc || '');
-                setDigit(user.digit || '');
-                setRole(user.role || '');
-
-                setCep(user.cep || '');
-                setAddress(user.address || '');
-                setNumber(user.number || '');
-                setComplement(user.complement || '');
-                setDistrict(user.district || '');
-                setCity(user.city || '');
-                setState(user.state || '');
-                setCountry(user.country || '');
-
-                setLoading(false);
-            } catch (error) {
-                console.error('Me error:', error);
-                setLoading(false);
-            }
-
-        }
-        fetchData();
-    }, []);
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = {
             name: fullName,
             email: email,
-            phone: phone,
             phoneCountryCode: countryCode,
+            phone: phone,
             cpfCnpj: cpf,
+            password: firstPassword, // Note: This will be hashed in the pre-save hook
             bank: bank,
+            pix: pix,
             ag: agency,
             cc: account,
             digit: digit,
-            pix: pix,
             role: role,
+            // Address-related fields
             cep: cep,
             address: address,
             number: number,
@@ -99,31 +59,33 @@ export default function MyAccount() {
             state: state,
             country: country,
         };
-        if (newPassword !== '')
-            data.password = newPassword;
-
 
         // Check if all fields are filled
-        if (fullName === '' || email === '' || countryCode === '' || phone === '' || cpf === '' || role === '') {
+        if (fullName === '' || email === '' || countryCode === '' || phone === '' || cpf === '' || role === '' || firstPassword === '') {
             alert('Por favor, preencha todos os campos marcados com *');
             return;
         }
 
         try {
-            const response = await axios.put(`/users/${id}`, data);
-            alert('Usuário atualizado com sucesso!');
-            // navigate('/usuarios');
+            const response = await axios.post('/users', data);
+            alert('Usuário criado com sucesso!');
+            navigate('/usuarios');
         }
         catch (err) {
             console.log(err);
-            alert('Erro ao atualizar usuário. Por favor, tente novamente.');
+            alert('Erro ao criar usuário!');
         }
+    }
+
+    const generateRandomPassword = () => {
+        const randomPassword = Math.random().toString(36).slice(-8);
+        setFirstPassword(randomPassword);
     }
 
     return (
         <Grid container spacing={0}>
             <Grid item xs={12}>
-                <h1>Minha Conta</h1>
+                <h1>Novo Usuário</h1>
             </Grid>
             <Grid item xs={12}>
                 <Paper elevation={3} style={{ padding: '20px 20px 40px 20px', margin: '0px 20px 0px 20px', }}>
@@ -138,37 +100,46 @@ export default function MyAccount() {
                         <Grid item xs={12}>
                             <Grid container spacing={1}>
                                 <Grid item xs={12} sm={4}>
-                                    <label>Nome Completo</label>
+                                    <label>Nome Completo *</label>
                                     <TextField
-                                        placeholder='Nome Completo'
+                                        placeholder='Nome Completo *'
                                         fullWidth
                                         value={fullName}
                                         onChange={(e) => setFullName(e.target.value)}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={4}>
-                                    <label>Email</label>
+                                    <label>Email *</label>
                                     <TextField
                                         fullWidth
-                                        placeholder='Email'
+                                        placeholder='Email *'
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                     />
                                 </Grid>
-                                <Grid xs={1}>   </Grid>
-                                <Grid item xs={12} sm={4}>
-                                    <label>Telefone</label>
+                                <Grid xs={12}>   </Grid>
+                                <Grid item xs={4} sm={2}>
+                                    <label>Cód. País *</label>
                                     <TextField
-                                        placeholder='Telefone'
+                                        placeholder='Código do País *'
+                                        fullWidth
+                                        value={countryCode}
+                                        onChange={(e) => setCountryCode(e.target.value)}
+                                    />
+                                </Grid>
+                                <Grid item xs={8} sm={4}>
+                                    <label>Telefone *</label>
+                                    <TextField
+                                        placeholder='Telefone *'
                                         fullWidth
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={4}>
-                                    <label>CPF</label>
+                                    <label>CPF/CNPJ *</label>
                                     <TextField
-                                        placeholder='CPF'
+                                        placeholder='CPF/CNPJ *'
                                         fullWidth
                                         value={cpf}
                                         onChange={(e) => setCpf(e.target.value)}
@@ -241,7 +212,7 @@ export default function MyAccount() {
 
                     <Grid container spacing={0} style={{ marginTop: ' 10px' }}>
                         <Grid item xs={12}>
-                            <h3>Dados Profissionais</h3>
+                            <h3>Dados de Cadastro</h3>
                         </Grid>
                         <Grid item xs={12}>
                             <Divider />
@@ -250,7 +221,7 @@ export default function MyAccount() {
                         <Grid item xs={12}>
                             <Grid container spacing={1}>
                                 <Grid item xs={12} sm={4}>
-                                    <label>Função</label>
+                                    <label>Função *</label>
                                     <Select
                                         fullWidth
                                         value={role}
@@ -264,17 +235,18 @@ export default function MyAccount() {
                                     </Select>
                                 </Grid>
                                 <Grid item xs={8} sm={4}>
-                                    <label>Nova Senha</label>
+                                    <label>Primeira Senha *</label>
                                     <TextField
-                                        placeholder='Nova Senha *'
+                                        placeholder='Primeira Senha *'
                                         fullWidth
-                                        type='password'
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        value={firstPassword}
+                                        onChange={(e) => setFirstPassword(e.target.value)}
                                     />
                                 </Grid>
+                                <Grid item xs={4} sm={2}>
+                                    <button className='button-outlined' style={{ marginTop: '10px' }} onClick={generateRandomPassword}>Gerar Senha Aleatória</button>
+                                </Grid>
                             </Grid>
-
                         </Grid>
                         <Grid container spacing={0}>
                             <Grid item xs={12}>
@@ -366,7 +338,7 @@ export default function MyAccount() {
                                 <br />
                             </Grid>
                             <Grid item xs={12} style={{ textAlign: 'right' }}>
-                                <button className='button' onClick={handleSubmit}>Salvar Alterações</button>
+                                <button className='button' onClick={handleSubmit}>Criar Usuário</button>
                             </Grid>
                         </Grid>
                     </Grid>

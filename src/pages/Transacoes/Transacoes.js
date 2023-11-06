@@ -10,39 +10,86 @@ import brl from '../../assets/imgs/brl.png'
 import limit from '../../assets/imgs/limit.png'
 
 
-export default function AdminDashboard() {
-    const columns = [{ label: 'Campo Teste', key: 'name', onSort: () => console.log('Sort clicked'), isMain: true },
-    { label: 'Teste', key: 'age', width: '75px', dateFilter: true, },
-    { label: 'Testando', key: 'address', disableSorting: false, width: '200px' }, { label: 'Pix', key: 'pix', disableSorting: true }];
+export default function Transacoes() {
+    const columns = [
+        {
+            label: 'Tipo de Transação',
+            key: 'type',
+            onSort: () => console.log('Ordenar por Tipo'),
+            isMain: true
+        },
+        {
+            label: 'Data',
+            key: 'date',
+            onSort: () => console.log('Ordenar por Data'),
+            dateFilter: true
+        },
+        {
+            label: 'ID do Remetente',
+            key: 'senderId',
+            onSort: () => console.log('Ordenar por ID do Remetente'),
+        },
+        {
+            label: 'ID do Destinatário',
+            key: 'receiverId',
+            onSort: () => console.log('Ordenar por ID do Destinatário'),
+        },
+        {
+            label: 'Valor',
+            key: 'amount',
+            onSort: () => console.log('Ordenar por Valor'),
+        },
+        {
+            label: 'Moeda',
+            key: 'currencyCode',
+            onSort: () => console.log('Ordenar por Moeda'),
+        }
+    ];
+
 
 
     const rows = [
-        { name: 'John', age: 30, address: '123 Main St' },
-        { name: 'Jane', age: 25, address: '456 Oak St' },
-        { name: 'John', age: 30, address: '123 Main St' },
-        { name: 'JanTestee', age: 25, address: '456 Oak St', pix: '1291392342' },
-        { name: 'John', age: 30, address: '123 Main St' },
-        { name: 'Jane', age: 25, address: '456 Oak St' },
-        { name: 'John', age: 30, address: '123 Main St' },
-        { name: 'Jane', age: 25, address: '456 Oak St' },
-        // ... more rows
+        {
+            type: 'swap',
+            date: '2023-10-30',
+            senderId: '123',
+            receiverId: '456',
+            amount: 100.00,
+            currencyCode: 'USD'
+        },
+        {
+            type: 'deposit',
+            date: '2023-10-29',
+            senderId: '789',
+            receiverId: '012',
+            amount: 200.50,
+            currencyCode: 'EUR'
+        },
+        {
+            type: 'withdrawal',
+            date: '2023-10-28',
+            senderId: '345',
+            receiverId: '678',
+            amount: 150.75,
+            currencyCode: 'GBP'
+        }
     ];
     return (
         <Grid container spacing={1}>
             <Grid item xs={12}>
-                <h1>Dashboard</h1>
+                <h1>Transações</h1>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-                <NumberCard title={'BRL'} number={'R$573.000,00'} img={brl} />
+                <NumberCard title={'TRANSAÇÕES REALIZADAS'} number={'68'} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-                <NumberCard title={'USD'} number={'R$230.000,00'} img={usd} />
+                <NumberCard title={'VOLUME'} number={'$230.000,00'} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-                <NumberCard title={'USDT'} number={'R$360.000,00'} img={usdt} />
+                <NumberCard title={'USDT'} number={'R$360.000,00'} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-                <NumberCard title={'LIMITE'} number={'R$280.000,00'} img={limit} />
+                <NumberCard title={'LIMITE'} number={'R$280.000,00'} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
                 <br />
@@ -59,7 +106,7 @@ export default function AdminDashboard() {
                                 { element: <IconButton><DeleteIcon /></IconButton>, onClick: (row) => console.log('Delete clicked', row), },
                             ]}
                             bulkActions={[{ label: 'Deletar itens selecionados', onClick: () => alert('Deletados') }]}
-                            baseUrl={'/dashboard'}
+                            baseUrl={'/transacoes'}
                             pageTitle={'Transações'}
                         />
                     </div>

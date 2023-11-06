@@ -2,9 +2,10 @@ import { Grid, Hidden, Paper, TextField, Typography } from '@mui/material'
 import React, { useContext, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthContext'
 import logo from '../../assets/imgs/victory.png'
+import axios from 'axios'
 
 export default function Login() {
-    const { setToken, setUser, token, user } = useContext(AuthContext);
+    const { setToken, setUserJwt, token, user } = useContext(AuthContext);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,14 +20,22 @@ export default function Login() {
         }
     }
 
-    const submit = (e) => {
+    const submit = async (e) => {
         e.preventDefault();
 
-        // TODO retrieve from API
-        const token = '123';
-
-        localStorage.setItem('token', token);
-        setToken(token);
+        try {
+            // TODO retrieve from API
+            let res = await axios.post('/auth/login', { email, password });
+            console.log(res.data)
+            let t = res.data.token;
+            localStorage.setItem('token', t);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${t}`;
+            setToken(t);
+            setUserJwt(res.data.user);
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Erro ao fazer login');
+        }
     }
 
     return (

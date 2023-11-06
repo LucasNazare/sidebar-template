@@ -1,6 +1,6 @@
 import { Menu } from '@mui/icons-material'
 import { Drawer, Grid, IconButton } from '@mui/material'
-import logo from '../../../assets/imgs/KW_VALE.png'
+import logo from '../../../assets/imgs/victory.png'
 import React, { useState } from 'react'
 import SidebarDesktop from './SidebarDesktop'
 

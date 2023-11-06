@@ -6,11 +6,12 @@ import { DesignContext } from '../../../contexts/DesignContext';
 import logo from '../../../assets/imgs/victory.png'
 import GroupIcon from '@mui/icons-material/Group';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import ReceiptIcon from '@mui/icons-material/Receipt';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { AuthContext } from '../../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -73,27 +74,27 @@ export default function SidebarDesktop({ mobile }) {
 
 
 
-                        <ListItemButton onClick={() => navigate('/receita')}>
+                        <ListItemButton onClick={() => navigate('/cotacoes')}>
                             <ListItemIcon>
-                                <ReceiptIcon />
+                                <CurrencyExchangeIcon />
                             </ListItemIcon>
-                            <span style={{ fontSize: '1.2rem' }}>Receita</span>
+                            <span style={{ fontSize: '1.2rem' }}>Cotações</span>
                         </ListItemButton>
 
 
-                        <ListItemButton onClick={() => navigate('/pagamentos')}>
+                        <ListItemButton onClick={() => navigate('/transacoes')}>
                             <ListItemIcon>
                                 <PaymentsIcon />
                             </ListItemIcon>
-                            <span style={{ fontSize: '1.2rem' }}>Pagamentos</span>
+                            <span style={{ fontSize: '1.2rem' }}>Transações</span>
                         </ListItemButton>
 
 
-                        <ListItemButton onClick={() => navigate('/balanco')}>
+                        <ListItemButton onClick={() => navigate('/carteira')}>
                             <ListItemIcon>
                                 <AccountBalanceWalletIcon />
                             </ListItemIcon>
-                            <span style={{ fontSize: '1.2rem' }}>Balanço</span>
+                            <span style={{ fontSize: '1.2rem' }}>Carteira</span>
                         </ListItemButton>
 
 
@@ -114,6 +115,18 @@ export default function SidebarDesktop({ mobile }) {
 
                     <Grid item xs={12}>
                         <List style={{ textAlign: 'left' }}>
+                            <ListItemButton onClick={() => navigate('/pendentes')}>
+                                <ListItemIcon>
+                                    <PendingActionsIcon />
+                                </ListItemIcon>
+                                <span style={{ fontSize: '1.2rem' }}>Transações Pendentes</span>
+                            </ListItemButton>
+                            <ListItemButton onClick={() => navigate('/usuarios')}>
+                                <ListItemIcon>
+                                    <GroupIcon />
+                                </ListItemIcon>
+                                <span style={{ fontSize: '1.2rem' }}>Usuários</span>
+                            </ListItemButton>
                             <ListItemButton onClick={() => navigate('/configuracoes')}>
                                 <ListItemIcon>
                                     <SettingsIcon />
