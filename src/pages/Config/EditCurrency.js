@@ -1,12 +1,15 @@
 import { Checkbox, Grid, Paper, TextField } from '@mui/material'
 import axios from 'axios';
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
 import CustomFileInputField from '../../components/Fields/CustomFileInputField';
+import LoadingOverlay from '../../templates/LoadingOverlay';
 
-export default function AddCurrency() {
+export default function EditCurrency() {
     const navigate = useNavigate();
+    const { id } = useParams();
 
+    const [currency, setCurrency] = useState(null);
     const [name, setName] = useState('');
     const [currencyCode, setCurrencyCode] = useState('');
     const [prefix, setPrefix] = useState('');
@@ -19,8 +22,35 @@ export default function AddCurrency() {
     const [isCrypto, setIsCrypto] = useState(false);
     const [yahooFinanceSymbol, setYahooFinanceSymbol] = useState('');
 
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const getCurrency = async () => {
+            try {
+                const response = await axios.get(`/currencies/${id}`);
+                setCurrency(response.data);
+                setName(response.data.name);
+                setCurrencyCode(response.data.currencyCode);
+                setPrefix(response.data.prefix);
+                setSpreadBuy(response.data.spreadBuy);
+                setSpreadSell(response.data.spreadSell);
+                setIsCash(response.data.isCash ? true : false);
+                setTransferTo(response.data.transferTo);
+                setTransferInstructions(response.data.transferInstructions);
+                setIsCrypto(response.data.isCrypto ? true : false);
+                setYahooFinanceSymbol(response.data.yahooFinanceSymbol);
+                setLoading(false);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        getCurrency();
+    }, []);
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             const formData = new FormData();
             formData.append('image', imageFile);
@@ -29,26 +59,32 @@ export default function AddCurrency() {
             formData.append('prefix', prefix);
             formData.append('spreadBuy', spreadBuy);
             formData.append('spreadSell', spreadSell);
-            formData.append('isCash', isCash);
+            formData.append('isCash', isCash ? 'true' : 'false');
             formData.append('transferTo', transferTo);
             formData.append('transferInstructions', transferInstructions);
-            formData.append('isCrypto', setIsCrypto);
+            formData.append('isCrypto', isCrypto ? 'true' : 'false');
             formData.append('yahooFinanceSymbol', yahooFinanceSymbol);
 
-
-            const response = await axios.post('/currencies', formData);
-            alert('Moeda cadastrada com sucesso!');
+            const response = await axios.put(`/currencies/${id}`, formData);
+            alert('Moeda editada com sucesso!');
             navigate('/configuracoes');
         } catch (error) {
             console.error(error);
-            alert('Erro ao cadastrar moeda!');
+            alert('Erro ao editar moeda!');
         }
+        finally {
+            setLoading(false);
+        }
+    }
+
+    if (loading) {
+        return <LoadingOverlay />
     }
 
     return (
         <Grid container spacing={0}>
             <Grid item xs={12}>
-                <h1>Cadastrar Moeda</h1>
+                <h1>Editar Moeda</h1>
             </Grid>
             <Grid item xs={12}>
                 <Paper elevation={3} style={{ padding: '20px 20px 40px 20px', margin: '0px 20px 0px 20px', }}>
@@ -86,7 +122,6 @@ export default function AddCurrency() {
                             <TextField label="Spread Venda" variant="outlined" fullWidth value={spreadSell} type='number'
                                 onChange={(e) => setSpreadSell(e.target.value)} />
                         </Grid>
-
                         <Grid item xs={12}>
                             <label>Dinheiro Vivo</label>
                             <Checkbox checked={isCash} onChange={(e) => setIsCash(e.target.checked)}
@@ -108,21 +143,23 @@ export default function AddCurrency() {
                                 onChange={(e) => setYahooFinanceSymbol(e.target.value)}
                             />
                         </Grid>
+
                         <Grid item xs={12}>
                             <CustomFileInputField
-                                accept='image/*'
                                 label='Imagem'
-                                onChange={(e) => setImageFile(e.target.files[0])}
-                                btnText={imageFile ? 'Substituir Imagem' : 'Adicionar Imagem'}
                                 file={imageFile}
                                 setFile={setImageFile}
-                                showPreview={true}
+                                onChange={(e) => setImageFile(e.target.files[0])}
+                                accept='image/*'
+                                btnText={'Substituir Imagem'}
+                                showPreview
                             />
                         </Grid>
+
                     </Grid>
                     <div item xs={12} style={{ textAlign: 'right' }}>
                         <br />
-                        <button className='button' onClick={handleSubmit}>Cadastrar</button>
+                        <button className='button' onClick={handleSubmit}>Salvar</button>
                     </div>
                 </Paper>
             </Grid>

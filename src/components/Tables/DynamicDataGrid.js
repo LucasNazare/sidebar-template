@@ -18,7 +18,8 @@ import {
     Divider,
     Select,
     MenuItem,
-    Menu
+    Menu,
+    Autocomplete
 } from '@mui/material';
 import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import ArrowUpward from '@mui/icons-material/ArrowUpward';
@@ -26,8 +27,6 @@ import { styled } from '@mui/system';
 import Collapse from '@mui/material/Collapse';
 import Box from '@mui/material/Box';
 import { useNavigate } from 'react-router-dom'
-import { format, parse } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
 import axios from 'axios';
 
 const StyledTableRow = styled(TableRow)({
@@ -53,7 +52,7 @@ const sortRows = (rows, config) => {
     });
 };
 
-const ResponsiveTable = ({ columns, rows: initialRows, allowMultipleSelection, actions, onSort, bulkActions, baseUrl, pageTitle, queryUrl }) => {
+const ResponsiveTable = ({ columns, rows: initialRows, allowMultipleSelection, actions, onSort, bulkActions, baseUrl, pageTitle, queryUrl, reload, title }) => {
     const navigate = useNavigate();
     const [selectedRows, setSelectedRows] = useState([]);
     const [rows, setRows] = useState(initialRows);
@@ -88,7 +87,7 @@ const ResponsiveTable = ({ columns, rows: initialRows, allowMultipleSelection, a
 
         // Reset Loading State
         setLoading(false);
-    }, [appliedFilters, sortConfig, page, rowsPerPage]);
+    }, [appliedFilters, sortConfig, page, rowsPerPage, reload]);
 
     useEffect(() => {
         setRows(sortRows(initialRows, sortConfig));
@@ -124,7 +123,7 @@ const ResponsiveTable = ({ columns, rows: initialRows, allowMultipleSelection, a
                     ...filters
                 }
             });
-            console.log(response.data);
+            // console.log(response.data);
             setRows(response.data.data);
             setTotalRows(response.data.total);
 
@@ -135,7 +134,7 @@ const ResponsiveTable = ({ columns, rows: initialRows, allowMultipleSelection, a
     };
 
     const buildUrl = () => {
-        let url = `${baseUrl}?page=${page}&rowsPerPage=${rowsPerPage}&sort=${sortConfig.key || ''}&direction=${sortConfig.direction || 'asc'}`;
+        let url = `${baseUrl}?page=${parseInt(page) + 1}&rowsPerPage=${rowsPerPage}&sort=${sortConfig.key || ''}&direction=${sortConfig.direction || 'asc'}`;
         // Use appliedFilters to build URL
         for (const [key, value] of Object.entries(appliedFilters)) {
             if (value) url += `&filter[${key}]=${encodeURIComponent(value)}`;
@@ -205,13 +204,20 @@ const ResponsiveTable = ({ columns, rows: initialRows, allowMultipleSelection, a
 
     return (
         <TableContainer component={Paper} style={{ overflowX: 'auto' }}>
+            <br />
+            {title &&
+                <div style={{ margin: '20px' }}>
+                    <h3>{title}</h3>
+                    <Divider />
+                </div>
+            }
             <button className={filterOpen ? 'button-outlined mini' : 'button'} onClick={handleFilterToggle} style={{ margin: '10px' }}>{filterOpen ? 'Fechar Filtros' : 'Filtros'}</button>
             <Collapse in={filterOpen}>
                 <Box p={2}>
                     <Grid container spacing={2} alignItems="center" justifyContent="left">
                         {columns.map((column) => (
                             !column.disableFilter &&
-                            <Grid item key={column.key}>
+                            <Grid item key={`${column.key}_${column.label}`}>
                                 {column.dateFilter ? (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <div>
@@ -227,23 +233,61 @@ const ResponsiveTable = ({ columns, rows: initialRows, allowMultipleSelection, a
                                             <label>{`Filtrar ${column.label} até`}</label><br />
                                             <TextField
                                                 type="date"
-
                                                 value={filters[`${column.key}_endDate`] || ''}
                                                 onChange={(e) => handleFilterChange(`${column.key}_endDate`, e.target.value)}
 
                                             />
                                         </div>
                                     </div>
-                                ) : (
+                                ) : column.numberFilter ?
                                     <>
-                                        <label>{`Filtrar ${column.label}`}</label><br />
-                                        <TextField
-                                            style={{ width: column.width }}
-                                            value={filters[column.key] || ''}
-                                            onChange={(e) => handleFilterChange(column.key, e.target.value)}
-                                        />
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div>
+                                                <label>{`Filtrar ${column.label} de`}</label><br />
+                                                <TextField
+                                                    type="number"
+                                                    value={filters[`${column.key}_greaterThan`] || ''}
+                                                    onChange={(e) => handleFilterChange(`${column.key}_greaterThan`, e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label>{`Filtrar ${column.label} até`}</label><br />
+                                                <TextField
+                                                    type="number"
+                                                    value={filters[`${column.key}_lesserThan`] || ''}
+                                                    onChange={(e) => handleFilterChange(`${column.key}_lesserThan`, e.target.value)}
+
+                                                />
+                                            </div>
+                                        </div>
                                     </>
-                                )}
+                                    : column.customFilterOptions ? (
+                                        <>
+                                            <label>{`Filtrar ${column.label}`}</label><br />
+                                            {/* Format: {label: 'teste', value: 0} */}
+                                            <Autocomplete
+                                                disablePortal
+                                                options={column.customFilterOptions}
+                                                getOptionLabel={(option) => option.label} // Display the label
+                                                sx={{ width: 235 }}
+                                                renderInput={(params) => <TextField {...params} />}
+                                                onChange={(e, value) => handleFilterChange(column.nFilter ? `${column.key}_n` : column.key, value?.value)} // Store the value
+                                                value={filters[column.nFilter ? `${column.key}_n` : column.key] ? column.customFilterOptions.find(opt => opt.value === filters[column.nFilter ? `${column.key}_n` : column.key]) : ''}
+                                                inputValue={filters[column.nFilter ? `${column.key}_n` : column.key] ? column.customFilterOptions.find(opt => opt.value === filters[column.nFilter ? `${column.key}_n` : column.key]).label : ''}
+                                            />
+
+                                        </>
+                                    )
+                                        : (
+                                            <>
+                                                <label>{`Filtrar ${column.label}`}</label><br />
+                                                <TextField
+                                                    style={{ width: column.width }}
+                                                    value={filters[column.nFilter ? `${column.key}_n` : column.key] || ''}
+                                                    onChange={(e) => handleFilterChange(column.nFilter ? `${column.key}_n` : column.key, e.target.value)}
+                                                />
+                                            </>
+                                        )}
                             </Grid>
                         ))}
                         <Grid item>
@@ -272,7 +316,7 @@ const ResponsiveTable = ({ columns, rows: initialRows, allowMultipleSelection, a
                         )}
                         {columns?.map((column) => (
                             <TableCell
-                                key={column.key}
+                                key={`${column.key}_${column.label}`}
                                 className={column.isMain ? 'main-cell' : ''}
                                 style={{
                                     width: column.width,
@@ -304,39 +348,45 @@ const ResponsiveTable = ({ columns, rows: initialRows, allowMultipleSelection, a
                                 {actions.length > 0 && <TableCell><Skeleton /></TableCell>}
                             </StyledTableRow>
                         ))
-                    ) : (
-                        rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, rowIndex) => (
-                            <StyledTableRow key={rowIndex}>
-                                {allowMultipleSelection && bulkActions?.length && (
-                                    <TableCell padding="checkbox">
-                                        <Checkbox
-                                            checked={selectedRows.includes(rowIndex)}
-                                            onChange={() => handleCheckboxChange(rowIndex)}
-                                        />
-                                    </TableCell>
-                                )}
-                                {columns?.map((column, columnIndex) => (
-                                    <TableCell
-                                        key={columnIndex}
-                                        className={column.isMain ? 'main-cell' : ''}
-                                        style={{
-                                            width: column.width,
-                                            ...(column.isMain ? stickyStyle : {}),
-                                        }}
-                                    >
-                                        {column.render ? column.render(row) : row[column.key]}
-                                    </TableCell>
-                                ))}
-                                {actions.length > 0 && (
-                                    <TableCell>
-                                        {actions.map((action, actionIndex) => <span onClick={() => action.onClick(row)}>{action.element}</span>)}
-                                    </TableCell>
-                                )}
-                            </StyledTableRow>
-                        ))
+                    ) : (rows.map((row, rowIndex) => (
+                        <StyledTableRow key={rowIndex}>
+                            {allowMultipleSelection && bulkActions?.length && (
+                                <TableCell padding="checkbox">
+                                    <Checkbox
+                                        checked={selectedRows.includes(rowIndex)}
+                                        onChange={() => handleCheckboxChange(rowIndex)}
+                                    />
+                                </TableCell>
+                            )}
+                            {columns?.map((column, columnIndex) => (
+                                <TableCell
+                                    key={columnIndex}
+                                    className={column.isMain ? 'main-cell' : ''}
+                                    style={{
+                                        width: column.width,
+                                        ...(column.isMain ? stickyStyle : {}),
+                                    }}
+                                >
+                                    {column.render ? column.render(row) : row[column.key]}
+                                </TableCell>
+                            ))}
+                            {actions.length > 0 && (
+                                <TableCell>
+                                    {actions.map((action, actionIndex) => (!action.hideIf || !action.hideIf(row)) && <span onClick={() => action.onClick(row)}>{action.element}</span>)}
+                                </TableCell>
+                            )}
+                        </StyledTableRow>
+                    ))
                     )}
                 </TableBody>
             </Table>
+            {
+                rows.length === 0 &&
+
+                <div style={{ textAlign: 'center', padding: '10px' }}>
+                    <label>Nenhum item encontrado</label>
+                </div>
+            }
             <TablePagination
                 component="div"
                 count={totalRows}
@@ -348,7 +398,6 @@ const ResponsiveTable = ({ columns, rows: initialRows, allowMultipleSelection, a
                 labelRowsPerPage="Itens por página:"
                 labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
             />
-
             {
                 selectedRows?.length > 0 && bulkActions?.length > 0 ?
                     <div style={{ padding: '10px' }}>

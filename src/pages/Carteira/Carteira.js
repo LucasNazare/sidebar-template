@@ -26,7 +26,6 @@ export default function Carteira() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        document.title = 'Minha Carteira';
         const fetchData = async () => {
             try {
                 // Get user data
@@ -64,8 +63,8 @@ export default function Carteira() {
                 <h1>Minha Carteira</h1>
             </Grid>
             <Grid item xs={12}>
-                <button className='button-outlined' onClick={() => navigate('/carteira')}>Solicitar Saque</button>
-                <button className='button' onClick={() => navigate('/carteira')}>Realizar Depósito</button>
+                <button className='button-outlined' onClick={() => navigate('/carteira/saque')}>Solicitar Saque</button>
+                <button className='button' onClick={() => navigate('/carteira/deposito')}>Realizar Depósito</button>
             </Grid>
             {
                 currencies?.map((currency) => {

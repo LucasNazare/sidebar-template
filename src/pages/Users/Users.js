@@ -11,6 +11,7 @@ import brl from '../../assets/imgs/brl.png'
 import limit from '../../assets/imgs/limit.png'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import ConfirmationDialog from '../../components/Modals/ConfirmationDialog';
 
 
 export default function Users() {
@@ -22,6 +23,9 @@ export default function Users() {
     const [nProviders, setNProviders] = useState(0);
     const [nCollectors, setNCollectors] = useState(0);
     const [nClients, setNClients] = useState(0);
+
+    const [itemToBeDeleted, setItemToBeDeleted] = useState(null);
+    const [reload, setReload] = useState(false);
 
     const columns = [
         {
@@ -48,6 +52,7 @@ export default function Users() {
         {
             label: 'Função',
             key: 'role',
+            customFilterOptions: ['PROVEDOR', 'RECOLHEDOR', 'CLIENTE', 'OPERADOR', 'ADMIN'],
             render: (row) => <Chip label={row.role} color={row.role === 'CLIENTE' ? 'secondary' : 'primary'} />
         },
         {
@@ -79,6 +84,18 @@ export default function Users() {
     }, []);
 
 
+    const deleteItem = async () => {
+        try {
+            await axios.delete(`/users/${itemToBeDeleted._id}`);
+            alert('Usuário deletado com sucesso!');
+            setItemToBeDeleted(null);
+            setReload(!reload);
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao deletar usuário!');
+        }
+    }
+
     return (
         <Grid container spacing={1}>
             <Grid item xs={12}>
@@ -107,19 +124,28 @@ export default function Users() {
                     <div style={{ maxWidth: '85vw', width: '100%', overflowX: 'auto' }}>
                         <DynamicDataGrid
                             columns={columns}
-                            rows={rows}
                             allowMultipleSelection
                             actions={[
                                 { element: <IconButton><AccountBalanceWalletIcon /></IconButton>, onClick: (row) => navigate(`/carteira/${row._id}`) },
                                 { element: <IconButton><EditIcon /></IconButton>, onClick: (row) => navigate(`/usuarios/${row._id}`) },
-                                { element: <IconButton><DeleteIcon /></IconButton>, onClick: (row) => console.log('Delete clicked', row), },
+                                { element: <IconButton><DeleteIcon /></IconButton>, onClick: (row) => setItemToBeDeleted(row) },
                             ]}
                             bulkActions={[{ label: 'Deletar itens selecionados', onClick: () => alert('Deletados') }]}
                             baseUrl={'/usuarios'}
                             pageTitle={'Usuários'}
                             queryUrl={'/users'}
+                            reload={reload}
                         />
                     </div>
+                    <ConfirmationDialog
+                        open={itemToBeDeleted != null}
+                        title={`Tem certeza que deseja deletar a moeda ${itemToBeDeleted?.name}?`}
+                        message={'Essa ação não poderá ser desfeita!'}
+                        confirmBtnText={'Deletar'}
+                        cancelBtnText={'Cancelar'}
+                        onConfirm={deleteItem}
+                        onCancel={() => { setItemToBeDeleted(null) }}
+                    />
 
                 </div>
             </Grid>

@@ -115,7 +115,7 @@ export default function SidebarDesktop({ mobile }) {
 
                     <Grid item xs={12}>
                         <List style={{ textAlign: 'left' }}>
-                            <ListItemButton onClick={() => navigate('/pendentes')}>
+                            <ListItemButton onClick={() => navigate('/transacoes/pendentes')}>
                                 <ListItemIcon>
                                     <PendingActionsIcon />
                                 </ListItemIcon>

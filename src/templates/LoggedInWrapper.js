@@ -3,11 +3,14 @@ import { AuthContext } from '../contexts/AuthContext'
 import PageLayout from './MainMenu/PageLayout';
 import Login from '../pages/Login/Login';
 
-export default function LoggedInWrapper({ children }) {
+export default function LoggedInWrapper({ children, layout = true }) {
     const { token } = useContext(AuthContext);
 
     if (!token) return <Login />
     return (
-        <PageLayout>{children}</PageLayout>
+        layout ?
+            <PageLayout>{children}</PageLayout>
+            :
+            <>{children}</>
     )
 }

@@ -1,5 +1,5 @@
 import { Chip, Grid, IconButton } from '@mui/material'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import NumberCard from '../../components/Cards/NumberCard'
 import DynamicDataGrid from '../../components/Tables/DynamicDataGrid'
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -11,12 +11,12 @@ import limit from '../../assets/imgs/limit.png'
 import ArticleIcon from '@mui/icons-material/Article';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../contexts/AuthContext';
+import CustomChart from '../../components/Charts/CustomChart';
+import LoadingOverlay from '../../templates/LoadingOverlay';
 
 
-export default function Transacoes() {
+export default function Pendentes() {
     const navigate = useNavigate();
-    const { userJwt } = useContext(AuthContext);
 
     const [transactions, setTransactions] = useState([]);
     const [currencies, setCurrencies] = useState([]);
@@ -112,7 +112,7 @@ export default function Transacoes() {
     useEffect(() => {
         async function getTransactions() {
             try {
-                const response = await axios.get(`/transactions?senderOrReceiverId=${userJwt.id}`);
+                const response = await axios.get('/transactions?status=PENDENTE');
                 setTransactions(response.data.data);
             }
             catch (error) {
@@ -123,10 +123,13 @@ export default function Transacoes() {
     }, []);
 
 
+    if (loading) {
+        return <LoadingOverlay />
+    }
     return (
         <Grid container spacing={1}>
             <Grid item xs={12}>
-                <h1>Transações</h1>
+                <h1>Transações Pendentes</h1>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
                 <NumberCard title={'TRANSAÇÕES'} number={transactions.length} />
@@ -140,8 +143,25 @@ export default function Transacoes() {
             <Grid item xs={12} sm={6} md={3}>
                 <NumberCard title={'CANCELADAS'} number={transactions.filter(transaction => transaction.status === 'CANCELADA').length} />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-                <br />
+            <Grid item xs={6} style={{ textAlign: 'center' }}>
+                <CustomChart
+                    data={transactions}
+                    dataKeys={[
+                        { key: 'type', label: 'Tipo', type: 'count' },
+                    ]}
+                    chartType="bar"
+                    colors={['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(75, 192, 192, 0.5)']}
+                />
+            </Grid>
+            <Grid item xs={6} style={{ textAlign: 'center' }}>
+                <CustomChart
+                    data={transactions}
+                    dataKeys={[
+                        { key: 'currency', label: 'Moeda', type: 'count' },
+                    ]}
+                    chartType="bar"
+                    colors={['rgba(54, 162, 235, 0.5)', 'rgba(75, 192, 192, 0.5)']}
+                />
             </Grid>
             <Grid item xs={12}>
                 <div style={{ display: 'flex', justifyContent: 'center', overflowX: 'hidden' }}>
@@ -152,8 +172,8 @@ export default function Transacoes() {
                             actions={[
                                 { element: <IconButton><ArticleIcon /></IconButton>, onClick: (row) => navigate(`/transacoes/${row._id}`) },
                             ]}
-                            baseUrl={'/transacoes'}
-                            queryUrl={`/transactions?senderOrReceiverId=${userJwt.id}`}
+                            baseUrl={'/transacoes/pendentes'}
+                            queryUrl={'/transactions?status=PENDENTE'}
                             pageTitle={'Transações'}
                         />
                     </div>

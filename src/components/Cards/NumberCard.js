@@ -7,7 +7,7 @@ export default function NumberCard({ number, title, items, btnText, itemFloat = 
     return (
         <Paper elevation={3} style={{ padding: '20px', margin: '0px 20px 0px 20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <img src={img} width={'75px'} />
+                <img src={img} width={'50px'} />
                 <h1 style={{ fontSize: '1.3rem' }}>{number}</h1>
             </div>
             <h2 style={{ color: palette.secondaryColor, textAlign: 'right' }}>{title}</h2>

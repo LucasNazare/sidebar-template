@@ -17,7 +17,7 @@ const imgs = {
     'LIMITE': limit
 }
 
-export default function AddFunds() {
+export default function Withdraw() {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -36,16 +36,16 @@ export default function AddFunds() {
                 // Get currencies
                 const res = await axios.get('/currencies');
                 setCurrencies(res.data.data);
-
-                // Find selected query param
-                const query = new URLSearchParams(window.location.search);
-                const selected = res.data.data.find(currency => currency._id === parseInt(query.get('currency')));
-                setSelectedCurrency(selected);
-
+                if (res.data.data.length > 0) {
+                    // Tries to get BRL
+                    const brl = res.data.data.find((currency) => currency.currencyCode === 'BRL');
+                    if (brl) setSelectedCurrency(brl);
+                    else setSelectedCurrency(res.data.data[0]);
+                }
 
                 // Get user data
-                const userResponse = await axios.get(`/users/${id}`);
-                setUser(userResponse.data);
+                const userResponse = await axios.get(`/auth/me`);
+                setUser(userResponse.data.user);
             }
             catch (error) {
                 console.error(error);
@@ -77,17 +77,25 @@ export default function AddFunds() {
         }
         catch (error) {
             console.error(error);
-            alert('Erro ao adicionar fundos');
+            alert('Erro ao solicitar saque');
             return;
         }
 
         setLoading(true);
         try {
-            // Add funds to user
-            const data = { currency: selectedCurrency.currencyCode, amount: parseFloat(amount) }
-            const res = await axios.post(`/users/${id}/addFunds`, data);
-            alert('Fundos adicionados com sucesso!');
-            navigate(`/carteira/${user._id}`);
+            let res = await axios.post('/transactions', {
+                status: 'PENDENTE',
+                type: 'SAQUE',
+                totalAmount: amount,
+                fullfilledAmount: 0,
+                senderId: user._id,
+                receiverId: user._id,
+                currency: selectedCurrency.currencyCode,
+                payments: []
+            });
+
+            alert('Saque solicitado com sucesso');
+            navigate('/carteira');
         }
         catch (error) {
             console.error(error);
@@ -97,11 +105,12 @@ export default function AddFunds() {
         }
     }
 
+
     if (loading) return <LoadingOverlay />
     return (
         <Grid container spacing={1} justifyContent={'center'}>
             <Grid item xs={12}>
-                <h1>Adicionar Fundos</h1>
+                <h1>Realizar Saque</h1>
             </Grid>
             <Grid item xs={12}>
                 <Divider />
@@ -112,7 +121,7 @@ export default function AddFunds() {
                     <Grid container spacing={0} justifyContent={'center'}>
 
                         <Grid item xs={12} style={{ textAlign: 'center' }}>
-                            <h1>Adicionando fundos para {user?.name}</h1>
+                            <h1>Escolha a moeda e a quantidade</h1>
                         </Grid>
                         <Grid item xs={12}>
                             <Divider />
@@ -162,16 +171,16 @@ export default function AddFunds() {
                         </Grid>
                         <Grid item xs={12}>
                             <br />
-                            <button className='button' onClick={() => setOpenConfirmationDialog(true)}>Adicionar</button>
+                            <button className='button' onClick={() => setOpenConfirmationDialog(true)}>Solicitar</button>
                         </Grid>
                     </Grid>
                 </Paper>
             </Grid>
             <ConfirmationDialog
                 open={openConfirmationDialog}
-                title={'Adicionar Fundos'}
-                message={`Tem certeza que deseja adicionar ${new Intl.NumberFormat('pt-BR', { style: 'decimal', minimumFractionDigits: 2 }).format(amount)} ${selectedCurrency.currencyCode} (${selectedCurrency.name}) para ${user?.name}?`}
-                confirmBtnText={'Adicionar'}
+                title={'Solicitar Saque'}
+                message={`Tem certeza que deseja solicitar saque de ${new Intl.NumberFormat('pt-BR', { style: 'decimal', minimumFractionDigits: 2 }).format(amount)} ${selectedCurrency?.currencyCode}?`}
+                confirmBtnText={'Solicitar'}
                 cancelBtnText={'Cancelar'}
                 onConfirm={submit}
                 onCancel={() => { setOpenConfirmationDialog(false) }}
